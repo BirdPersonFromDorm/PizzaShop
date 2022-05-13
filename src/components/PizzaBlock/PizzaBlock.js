@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
 import classNames from "classnames";
 import PropTypes from 'prop-types';
+import Button from "../Button";
 
-const PizzaBlock = ({name, imageUrl, price, types, sizes}) => {
+const PizzaBlock = ({id, name, imageUrl, price, types, sizes, onClickAddPizza, addedCount}) => {
 
     const availableTypes = ['тонкое', 'традиционное'];
     const [activeType, setActiveType] = useState(types[0]);
@@ -11,9 +12,22 @@ const PizzaBlock = ({name, imageUrl, price, types, sizes}) => {
     }
 
     const availableSizes = [26,30,40];
-    const [activeSize, setActiveSize] = useState(sizes[0]);
+    let number = availableSizes.indexOf(sizes[0]); // поиск индекса по первому элементу в массиве из баззы данных
+    const [activeSize, setActiveSize] = useState(0);
     const onSelectSize = (index) =>{
         setActiveSize(index)
+    }
+
+    const onAddPizza = () =>{
+        const obj = {
+            id,
+            name,
+            imageUrl,
+            price,
+            size: sizes[activeSize],
+            type: availableTypes[activeType]
+        }
+        onClickAddPizza(obj);
     }
 
     return (
@@ -46,7 +60,7 @@ const PizzaBlock = ({name, imageUrl, price, types, sizes}) => {
             </div>
             <div className="pizza-block__bottom">
                 <div className="pizza-block__price">от {price} ₽</div>
-                <div className="button button--outline button--add">
+                <Button onClick={onAddPizza} className="button--add" outline>
                     <svg
                         width="12"
                         height="12"
@@ -60,8 +74,10 @@ const PizzaBlock = ({name, imageUrl, price, types, sizes}) => {
                         />
                     </svg>
                     <span>Добавить</span>
-                    <i>2</i>
-                </div>
+                    {addedCount &&
+                        <i>{addedCount}</i>
+                    }
+                </Button>
             </div>
         </div>
     );
@@ -72,7 +88,9 @@ PizzaBlock.propTypes = {
     imageUrl: PropTypes.string.isRequired,
     price: PropTypes.number.isRequired,
     types: PropTypes.arrayOf(PropTypes.number).isRequired,
-    sizes: PropTypes.arrayOf(PropTypes.number).isRequired
+    sizes: PropTypes.arrayOf(PropTypes.number).isRequired,
+    onAddPizza: PropTypes.func,
+    addedCount: PropTypes.number
 };
 
 PizzaBlock.defaultProps = {
